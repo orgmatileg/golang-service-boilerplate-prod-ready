@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:13.2
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: masuk123
+
+  adminer:
+    image: adminer
+    ports:
+      - 1111:8080
+
+  redis:
+    image: redis:6.2.1
+    ports:
+      - 6379:6379
+
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    build:
+      dockerfile: Dockerfile.rabbitmq
+      context: .
+    environment:
+      - RABBITMQ_DEFAULT_PASS=masuk123
+      - RABBITMQ_DEFAULT_USER=app
+      - RABBITMQ_ERLANG_COOKIE=secret

@@ -1,0 +1,21 @@
+env: development # development | staging | production |
+
+auth:
+  expireAccessToken: 300d
+  expireRefreshToken: 300d
+
+postgres:
+  username: postgres
+  password: superSecret
+  sslMode: disable
+  host: postgres
+  port: 5432
+  dbName: app
+
+redis:
+  host: superSecret
+  port: 6379
+  defaultDb: 0
+
+jwt:
+  secret: superSecret
