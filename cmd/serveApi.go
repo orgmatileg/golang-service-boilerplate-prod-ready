@@ -3,7 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"golang_service/config"
 	"golang_service/pkg/echo"
+	"golang_service/pkg/logger"
 	"os"
 	"os/signal"
 
@@ -20,6 +22,19 @@ var serveApiCMD = &cobra.Command{
 	Short: "Start Serving REST API app",
 	Long:  `Start Serving REST API app`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		err := logger.NewLogger(logger.Configuration{
+			EnableConsole: true,
+			ConsoleLevel:  logger.Info,
+			ServiceName:   "app_backend",
+		}, logger.InstanceZapLogger)
+		if err != nil {
+			logger.Fatalf("Could not instantiate log %s", err.Error())
+		}
+
+		logger.Infof("Starting server...")
+
+		config.ParseConfigFromENV()
 
 		ctx, cancel := context.WithCancel(context.Background())
 		quit := make(chan os.Signal, 1)

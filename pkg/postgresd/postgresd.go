@@ -1,119 +1,52 @@
 package postgresd
 
 import (
-	"database/sql"
 	"fmt"
 	"golang_service/config"
 	"golang_service/pkg/logger"
-	"time"
 
-	"github.com/jackc/pgx/v4/stdlib"
-	sqlDatadogTrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/database/sql"
-	gormDatadogTrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorm.io/gorm.v1"
-
+	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var gormDB *gorm.DB
+type GormMaster *gorm.DB
+
+type GormSlave *gorm.DB
 
 // GetGormDB get db
-func GetGormDB() *gorm.DB {
+func ProvideGormMaster(lc fx.Lifecycle) *gorm.DB {
 
-	if gormDB != nil {
-		return gormDB
-	}
+	// if gormDB != nil {
+	// 	return gormDB
+	// }
 
-	err := createConnectionGorm()
-	if err != nil {
-		logger.Fatalf("postgresd | GetGormDB() | could not createConnection(): %s", err.Error())
-	}
+	// err := createConnectionGorm()
+	// if err != nil {
+	// 	logger.Fatalf("postgresd | GetGormDB() | could not createConnection(): %s", err.Error())
+	// }
 
-	return gormDB
+	// return gormDB
+	return nil
 }
 
-// GetDB get db
-func GetDB() *sql.DB {
-
-	if gormDB != nil {
-
-		dbCon, err := gormDB.DB()
-		if err != nil {
-			logger.Fatalf("postgresd | GetGormDB() | could not createConnection(): %s", err.Error())
-		}
-
-		return dbCon
-	}
-
-	err := createConnectionGorm()
-	if err != nil {
-		logger.Fatalf("postgresd | GetGormDB() | could not createConnection(): %s", err.Error())
-	}
-
-	dbCon, err := gormDB.DB()
-	if err != nil {
-		logger.Fatalf("postgresd | GetGormDB() | could not createConnection(): %s", err.Error())
-	}
-
-	return dbCon
-}
-
-// createConnectionGorm open new connection Postgres
-func createConnectionGorm() error {
+// createConnectionGormMaster open new connection Postgres
+func createConnectionGormMaster() error {
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=Asia/Jakarta",
-		config.Get().Postgres.Host,
-		config.Get().Postgres.Port,
-		config.Get().Postgres.Username,
-		config.Get().Postgres.Password,
-		config.Get().Postgres.DBName,
-		config.Get().Postgres.SSLMode,
+		config.Get().PostgreMaster.Host,
+		config.Get().PostgreMaster.Port,
+		config.Get().PostgreMaster.Username,
+		config.Get().PostgreMaster.Password,
+		config.Get().PostgreMaster.DBName,
+		config.Get().PostgreMaster.SSLMode,
 	)
 
-	sqlDatadogTrace.Register("pgx", &stdlib.Driver{},
-		sqlDatadogTrace.WithServiceName("app_backend_postgres_master"),
-		sqlDatadogTrace.WithAnalyticsRate(1),
-		sqlDatadogTrace.WithAnalytics(true),
-	)
-
-	sqlCon, err := sqlDatadogTrace.Open("pgx", dsn)
+	gormDBCon, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		logger.Errorf("could not connect to database: %s", err.Error())
+		logger.Errorf("could not open connection to postgres database: %s", err.Error())
 		return err
 	}
 
-	gormDBCon, err := gormDatadogTrace.Open(
-		postgres.New(
-			postgres.Config{
-				Conn: sqlCon,
-			},
-		),
-		&gorm.Config{},
-	)
-	if err != nil {
-		logger.Errorf("could not ping postgres database: %s", err.Error())
-		return err
-	}
-
-	sqldb, err := gormDBCon.DB()
-	if err != nil {
-		logger.Errorf("could not ping postgres database: %s", err.Error())
-		return err
-	}
-
-	err = sqldb.Ping()
-	if err != nil {
-		logger.Errorf("could not ping postgres database: %s", err.Error())
-		return err
-	}
-
-	sqldb.SetMaxOpenConns(100)
-	sqldb.SetMaxIdleConns(10)
-	sqldb.SetConnMaxIdleTime(300 * time.Second)
-	sqldb.SetConnMaxLifetime(time.Duration(300 * time.Second))
-
-	logger.Infof("database postgres: Connected!")
-
-	gormDB = gormDBCon
 	return nil
 }

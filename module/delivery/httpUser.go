@@ -2,9 +2,9 @@ package delivery
 
 import (
 	"context"
-	"database/sql"
 
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 type UserDelivery interface {
@@ -16,8 +16,8 @@ func UserDeliveryNew(lc fx.Lifecycle) UserDelivery {
 }
 
 type userDelivery struct {
-	dbMaster *sql.DB
-	dbSlave  *sql.DB
+	dbMaster *gorm.DB
+	dbSlave  *gorm.DB
 }
 
 func (u *userDelivery) CreateUser(ctx context.Context) error {

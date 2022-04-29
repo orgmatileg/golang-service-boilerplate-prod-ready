@@ -20,14 +20,23 @@ type Config struct {
 	Env    string `yaml:"env"`
 	AppURL string `yaml:"appURL"`
 
-	Postgres struct {
+	PostgreMaster struct {
 		Username string `yaml:"username"`
 		Password string `yaml:"password"`
 		SSLMode  string `yaml:"sslMode"`
 		Host     string `yaml:"host"`
 		Port     string `yaml:"port"`
 		DBName   string `yaml:"dbName"`
-	} `yaml:"postgres"`
+	} `yaml:"postgres_master"`
+
+	PostgresSlave struct {
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+		SSLMode  string `yaml:"sslMode"`
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		DBName   string `yaml:"dbName"`
+	} `yaml:"postgres_slave"`
 
 	JWT struct {
 		SecretAccessToken  string `yaml:"secretAccessToken"`

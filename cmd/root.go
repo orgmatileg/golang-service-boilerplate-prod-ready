@@ -1,9 +1,6 @@
 package cmd
 
 import (
-	"golang_service/config"
-	"golang_service/pkg/logger"
-
 	"github.com/spf13/cobra"
 )
 
@@ -22,23 +19,4 @@ func init() {
 	cobra.OnInitialize(initConfig)
 }
 
-func initConfig() {
-
-	// Init Logger
-	err := logger.NewLogger(logger.Configuration{
-		EnableConsole:     true,
-		ConsoleLevel:      logger.Info,
-		ConsoleJSONFormat: true,
-		EnableFile:        false,
-		FileLevel:         logger.Info,
-		FileJSONFormat:    false,
-		FileLocation:      "refit-backend.log",
-		ServiceName:       "app_backend",
-	}, logger.InstanceZapLogger)
-	if err != nil {
-		logger.Fatalf("Could not instantiate log %s", err.Error())
-	}
-
-	config.ParseConfigFromENV()
-
-}
+func initConfig() {}

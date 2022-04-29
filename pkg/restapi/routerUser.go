@@ -1,21 +1,20 @@
 package restapi
 
 import (
-	handlerAuth "golang_service/belum_pindah/auth/handler"
-	"golang_service/pkg/postgresd"
+	// handlerAuth "golang_service/belum_pindah/auth/handler"
 
 	"github.com/labstack/echo/v4"
 )
 
 func setRouterForUser(e *echo.Echo) {
 
-	handlerAuth.SetRouter(
-		e,
-		// logicAuth.New(
-		// 	repositoryUser.New(postgresd.GetDB()),
-		// ),
-		postgresd.GetDB(),
-	)
+	// handlerAuth.SetRouter(
+	// e,
+	// logicAuth.New(
+	// 	repositoryUser.New(postgresd.GetDB()),
+	// ),
+	// postgresd.GetDB(),
+	// )
 
 	// handlerUser.SetRouter(
 	// 	e,
